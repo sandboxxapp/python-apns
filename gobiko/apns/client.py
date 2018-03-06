@@ -124,12 +124,12 @@ class APNsClient(object):
         )
         return token.decode('ascii')
 
-    def _send_message(self, registration_id, alert, 
+    def _send_message(self, registration_id, alert, title=None,
             badge=None, sound=None, category=None, content_available=False,
-            mutable_content=False,
-            action_loc_key=None, loc_key=None, loc_args=[], extra={}, 
-            identifier=None, expiration=None, priority=10, 
-            connection=None, auth_token=None, bundle_id=None, topic=None
+            mutable_content=False, action_loc_key=None, title_loc_key=None, title_loc_args=[],
+            loc_key=None, loc_args=[], extra={}, identifier=None,
+            expiration=None, priority=10, connection=None, auth_token=None,
+            bundle_id=None, topic=None
         ):
         if not (topic or bundle_id or self.bundle_id):
             raise ImproperlyConfigured(
@@ -139,7 +139,7 @@ class APNsClient(object):
         data = {}
         aps_data = {}
 
-        if action_loc_key or loc_key or loc_args:
+        if action_loc_key or loc_key or loc_args or title or title_loc_key or title_loc_args:
             alert = {"body": alert} if alert else {}
             if action_loc_key:
                 alert["action-loc-key"] = action_loc_key
@@ -147,6 +147,12 @@ class APNsClient(object):
                 alert["loc-key"] = loc_key
             if loc_args:
                 alert["loc-args"] = loc_args
+            if title:
+                alert["title"] = title
+            if title_loc_key:
+                alert["title-loc-key"] = title_loc_key
+            if title_loc_args:
+                alert["title-loc-args"] = title_loc_args
 
         if alert is not None:
             aps_data["alert"] = alert
